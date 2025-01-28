@@ -75,7 +75,7 @@ pmtiles==3.3.0
 priority==2.0.0
 prompt-toolkit==3.0.36
 protobuf==4.25.3
-psycopg2==2.9.10
+psycopg2-binary
 psygnal==0.11.1
 pyarrow==17.0.0
 PyCRS==1.0.2
