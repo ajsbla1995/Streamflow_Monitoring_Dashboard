@@ -1,0 +1,21 @@
+# Ignore environment files
+.env
+
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+
+# Ignore virtual environments
+venv/
+env/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+
+# Ignore certain .py files
+!pull_data_from_local_postgisDB.py
