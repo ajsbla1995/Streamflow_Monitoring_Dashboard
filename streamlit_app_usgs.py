@@ -2,7 +2,6 @@ import geopandas as gpd
 import pandas as pd
 from shapely.geometry import Point
 from IPython.display import Image
-import seaborn as sns
 from dotenv import load_dotenv
 import pydeck as pdk
 import streamlit as st
@@ -19,7 +18,6 @@ import logging
 from datetime import datetime
 import pydeck
 import streamlit as st
-import seaborn as sns
 from io import StringIO
 import matplotlib.pyplot as plt
 import time
