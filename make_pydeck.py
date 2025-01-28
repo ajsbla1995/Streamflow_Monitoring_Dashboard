@@ -20,7 +20,6 @@ import pydeck
 import streamlit as st
 from io import StringIO
 import matplotlib.pyplot as plt
-import pull_data_from_local_postgisDB 
 import math
 
 # Set the working directory to the parent directory of this script
