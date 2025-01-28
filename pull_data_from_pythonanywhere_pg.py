@@ -108,7 +108,7 @@ def postgis_to_gdf():
     ssh_username = os.getenv("SSH_USERNAME")
     ssh_password = os.getenv("SSH_PASSWORD")
     postgres_hostname = os.getenv("DB_HOST")
-    postgres_host_port = os.getenv("DB_PORT")
+    postgres_host_port = int(os.getenv("DB_PORT"))
     postgres_user = os.getenv("DB_USERNAME")
     postgres_password = os.getenv("DB_PASSWORD")
     postgres_db = os.getenv("DB_NAME")
