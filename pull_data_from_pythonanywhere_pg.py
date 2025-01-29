@@ -96,7 +96,7 @@ def deprecated_postgis_to_gdf():
         return None
 
 @st.cache_data
-def postgis_to_gdf():
+def deprecated_postgis_to_gdf():
     
     # Accessing SSH and Postgres credentials through .env file (locally)
     #ssh_host = os.getenv("SSH_HOST")
@@ -174,7 +174,73 @@ def postgis_to_gdf():
     except Exception as e:
         print(f"An error occurred: {e}")
         return None
+
+# ------------------------------------------------ CACHED VERSION ---------------------------
+@st.cache_resource
+def get_db_connection():
+    """Establish an SSH tunnel and return a persistent database connection."""
     
+    # Accessing SSH and Postgres credentials through .env file (locally)
+    #ssh_host = os.getenv("SSH_HOST")
+    #ssh_username = os.getenv("SSH_USERNAME")
+    #ssh_password = os.getenv("SSH_PASSWORD")
+    #postgres_hostname = os.getenv("DB_HOST")
+    #postgres_host_port = int(os.getenv("DB_PORT"))
+    #postgres_user = os.getenv("DB_USERNAME")
+    #postgres_password = os.getenv("DB_PASSWORD")
+    #postgres_db = os.getenv("DB_NAME")
+
+    # Accessing the secrets from Streamlit's secret management system
+    ssh_host = st.secrets["postgres"]["SSH_HOST"]
+    ssh_username = st.secrets["postgres"]["SSH_USERNAME"]
+    ssh_password = st.secrets["postgres"]["SSH_PASSWORD"]
+    postgres_hostname = st.secrets["postgres"]["DB_HOST"]
+    postgres_host_port = int(st.secrets["postgres"]["DB_PORT"])
+    postgres_user = st.secrets["postgres"]["DB_USERNAME"]
+    postgres_password = st.secrets["postgres"]["DB_PASSWORD"]
+    postgres_db = st.secrets["postgres"]["DB_NAME"]
+
+    # Start SSH tunnel
+    tunnel = SSHTunnelForwarder(
+        (ssh_host),
+        ssh_username=ssh_username,
+        ssh_password=ssh_password,  # Optional if using SSH keys
+        remote_bind_address=(postgres_hostname, postgres_host_port),
+    )
+    tunnel.start()
+    print(f"SSH Tunnel established on local port: {tunnel.local_bind_port}")
+
+    # Connect to Postgres
+    conn = psycopg2.connect(
+        user=postgres_user,
+        password=postgres_password,
+        host="127.0.0.1",
+        port=tunnel.local_bind_port,
+        database=postgres_db,
+    )
+    return conn, tunnel  # Return both to manage tunnel lifecycle
+
+
+@st.cache_data(ttl=1800)  # Cache results for 30 minutes
+def postgis_to_gdf():
+    """Fetch data from PostgreSQL and return a cached GeoDataFrame."""
+    conn, _ = get_db_connection()  # Use cached connection
+    sql_query = "SELECT * FROM usgs_water_sensor_data"
+
+    gdf = (
+        gpd.read_postgis(
+            sql=sql_query,
+            con=conn,
+            geom_col='geometry'
+        )
+        .to_crs("EPSG:4236")
+        .sort_values(by=['thing_name', 'obs_time'])
+        .assign(
+            discharge_streamflow_ft3_sec=lambda x: pd.to_numeric(x['discharge_streamflow_ft3_sec'], errors='coerce'),
+            obs_time=lambda x: pd.to_datetime(x['obs_time'], errors='coerce').dt.tz_convert('US/Pacific')
+        )
+    )
+    return gdf
 
 def main():
     gdf = postgis_to_gdf()
@@ -185,3 +251,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
