@@ -95,7 +95,7 @@ def deprecated_postgis_to_gdf():
         print(f"An error occurred: {e}")
         return None
 
-@st.cache_resource()
+@st.cache_data
 def postgis_to_gdf():
     
     # Accessing SSH and Postgres credentials through .env file (locally)
