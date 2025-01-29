@@ -26,13 +26,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Debug print statements
-print(f"DB_USERNAME: {os.getenv('DB_USERNAME')}")
-print(f"DB_PASSWORD: {os.getenv('DB_PASSWORD')}")
-print(f"DB_HOST: {os.getenv('DB_HOST')}")
-print(f"DB_PORT: {os.getenv('DB_PORT')}")
-print(f"DB_NAME: {os.getenv('DB_NAME')}")
-
 def deprecated_postgis_to_gdf():
     # SSH and Postgres credentials
     ssh_host = "ssh.pythonanywhere.com"
@@ -102,6 +95,7 @@ def deprecated_postgis_to_gdf():
         print(f"An error occurred: {e}")
         return None
 
+@st.cache_resource()
 def postgis_to_gdf():
     
     # Accessing SSH and Postgres credentials through .env file (locally)
