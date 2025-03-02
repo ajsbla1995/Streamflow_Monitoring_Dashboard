@@ -325,7 +325,7 @@ def create_streamflow_graph(current_data):
         x=current_data['obs_time'],
         y=current_data['max_historical_streamflow_ft3_sec'],
         mode='markers',
-        name='Historical Max Discharge for Time of Year (1970-2023)',
+        name='Historical Max Discharge',
         line=dict(color='red', dash='dashdot'),
         hovertemplate='Date of Max Discharge: %{customdata}<br>Max Discharge: %{y} (ft³/second)<br><extra></extra>',
         #customdata = current_data[['day_month_max']],
@@ -340,7 +340,7 @@ def create_streamflow_graph(current_data):
         x=current_data['obs_time'],
         y=current_data['50th_percentile'],
         mode='lines',
-        name='Historical Median Discharge for Time of Year (1970-2023)',
+        name='Historical Median Discharge',
         line=dict(color='yellow', dash='dashdot'),
         hovertemplate='<br>Median Discharge: %{y} (ft³/second)<br><extra></extra>',
     
@@ -353,7 +353,7 @@ def create_streamflow_graph(current_data):
 
     fig.update_layout(
         showlegend=True,
-        title=f"Current and Historical Streamflow for sensor {sensor_id} at {nearest_river}",
+        title=f"Current and Historical (1970-2024) Streamflow for sensor {sensor_id} at {nearest_river} for time of year",
         xaxis=dict(
             title="Date",
             titlefont=dict(size=14),
@@ -1226,7 +1226,7 @@ elif county_selectbox != 'Show All Sensors' and sensor_selectbox == "Select All"
        
 
 
-
+# SHOW PYDECK MAP OF SPECIFIC SENSOR ----|
 else:
 
     fig = create_streamflow_graph(selected_sensor_data_gdf)
